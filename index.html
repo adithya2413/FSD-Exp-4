@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js HTTP Request Demo</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Arial, sans-serif;
+            color: #172033;
+            background: #f2f5fa;
+        }
+
+        body {
+            box-sizing: border-box;
+            min-height: 100vh;
+            margin: 0;
+            padding: 32px 16px;
+            display: grid;
+            place-items: center;
+        }
+
+        main {
+            width: min(100%, 620px);
+            padding: 32px;
+            background: #fff;
+            border: 1px solid #dce3ee;
+            border-radius: 16px;
+            box-shadow: 0 12px 36px #17203312;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin: 24px 0 8px;
+            font-weight: 700;
+        }
+
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 96px;
+            padding: 12px;
+            border: 1px solid #b9c4d4;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: #2457d6;
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1946b8;
+        }
+
+        button:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #90adff;
+            outline-offset: 2px;
+        }
+
+        pre {
+            min-height: 48px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+            padding: 16px;
+            border-radius: 8px;
+            background: #f2f5fa;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Vishal Adithya A - Node.js HTTP Request Demo</h1>
+        <p>GET request handled successfully. Server is running.</p>
+        <p>Choose an HTTP method to send a request to the Node.js server.</p>
+
+        <label for="request-data">Data for POST and PUT</label>
+        <textarea id="request-data" name="data">name=Vishal&amp;course=NodeJS</textarea>
+
+        <div class="actions" aria-label="HTTP methods">
+            <button type="button" data-method="GET">GET</button>
+            <button type="button" data-method="POST">POST</button>
+            <button type="button" data-method="PUT">PUT</button>
+            <button type="button" data-method="DELETE">DELETE</button>
+        </div>
+
+        <h2>Server response</h2>
+        <pre id="response" role="status" aria-live="polite">Select a method to see its response.</pre>
+    </main>
+
+    <script>
+        const responseOutput = document.querySelector('#response');
+        const requestData = document.querySelector('#request-data');
+
+        document.querySelectorAll('button[data-method]').forEach(button => {
+            button.addEventListener('click', async () => {
+                const method = button.dataset.method;
+                responseOutput.textContent = `Sending ${method} request...`;
+
+                try {
+                    const response = await fetch(method === 'GET' ? '/' : '/data', {
+                        method,
+                        headers: method === 'POST' || method === 'PUT'
+                            ? { 'Content-Type': 'text/plain' }
+                            : undefined,
+                        body: method === 'POST' || method === 'PUT'
+                            ? requestData.value
+                            : undefined
+                    });
+                    const result = await response.text();
+                    responseOutput.textContent = result;
+                } catch (error) {
+                    responseOutput.textContent = `Request failed: ${error.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
